@@ -10,6 +10,8 @@ import retrofit2.http.Field;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.Headers;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -53,8 +55,12 @@ public interface JsonPlaceholderApi {
     Call<Post>createPost(@FieldMap Map<String, String>fields);
 
     // the put request changes the whole object
+
+    @Headers({"Static-header1: 123", "Static-header2: 456"})
     @PUT("posts/{id}")
-    Call<Post>putPost(@Path("id") int id, @Body Post post);
+    Call<Post>putPost(@Header("Dynamic-Header") String header,
+                      @Path("id") int id,
+                      @Body Post post);
 
     // the patch request only changes the value changed or submitted
     @PATCH("posts/{id}")
