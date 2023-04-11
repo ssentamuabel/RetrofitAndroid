@@ -6,10 +6,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,19 +36,33 @@ public class MainActivity extends AppCompatActivity {
 
         textViewResult = (TextView) findViewById(R.id.text_view_result);
 
+        // this is the Gson modification,
+        // to effect this, we add the gson in the create gsoncoveterfactory
+    //    Gson gson = new GsonBuilder().serializeNulls().create();
+
+
+
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                                    .addInterceptor(loggingInterceptor)
+                                    .build();
+
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://jsonplaceholder.typicode.com/")
                 .addConverterFactory(GsonConverterFactory.create())
+                .client(okHttpClient)
                 .build();
 
        jsonPlaceholderApi = retrofit.create(JsonPlaceholderApi.class);
 
        //getPosts();
        // getComments();
-       // createPost();
+        createPost();
        // updatePost();
-        deletePost();
+      //  deletePost();
 
 
     }
@@ -173,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
         Post post = new Post(12, null, "New text");
 
 
-        Call<Post>call = jsonPlaceholderApi.patchPost(5, post);
+        Call<Post>call = jsonPlaceholderApi.putPost(5, post);
 
         call.enqueue(new Callback<Post>() {
             @Override
