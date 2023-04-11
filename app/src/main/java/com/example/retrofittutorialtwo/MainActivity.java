@@ -41,7 +41,9 @@ public class MainActivity extends AppCompatActivity {
 
        //getPosts();
        // getComments();
-        createPost();
+       // createPost();
+       // updatePost();
+        deletePost();
 
 
     }
@@ -162,6 +164,56 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Post> call, Throwable t) {
+                textViewResult.setText(t.getMessage());
+            }
+        });
+    }
+
+    private void updatePost(){
+        Post post = new Post(12, null, "New text");
+
+
+        Call<Post>call = jsonPlaceholderApi.patchPost(5, post);
+
+        call.enqueue(new Callback<Post>() {
+            @Override
+            public void onResponse(Call<Post> call, Response<Post> response) {
+                if(!response.isSuccessful()){
+                    textViewResult.setText("Code :"+ response.code());
+                    return;
+                }
+
+                Post postResponse = response.body();
+
+
+                String content="";
+                content += "Code: "+ response.code() + "\n";
+                content +=  "ID: "+postResponse.getId() + "\n";
+                content +=  "Userid :" + postResponse.getUserId() + "\n";
+                content += "Title :" + postResponse.getTitle() + "\n";
+                content += "Text :" + postResponse.getText() + "\n\n";
+
+                textViewResult.append(content);
+            }
+
+            @Override
+            public void onFailure(Call<Post> call, Throwable t) {
+                textViewResult.setText(t.getMessage());
+            }
+        });
+    }
+
+    private void deletePost(){
+        Call<Void>call = jsonPlaceholderApi.deletePost(5);
+
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                textViewResult.setText("Code :"+ response.code());
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
                 textViewResult.setText(t.getMessage());
             }
         });
